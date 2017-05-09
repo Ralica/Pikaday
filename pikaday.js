@@ -527,8 +527,30 @@
                 return;
             }
             if (hasMoment) {
-                date = moment(opts.field.value, opts.format, opts.formatStrict);
-                date = (date && date.isValid()) ? date.toDate() : null;
+              var dateInputValue = new Date(opts.field.value);
+              if ( Object.prototype.toString.call(dateInputValue) === "[object Date]" ) {
+                // it is a date
+                if ( isNaN( dateInputValue.getTime() ) ) {  // d.valueOf() could also work
+                  // date is not valid
+                  date = null;
+                }
+                else {
+                  // date is valid
+                  if(dateInputValue.getYear() < 1970){
+                    date = moment(dateInputValue, opts.format, opts.formatStrict);
+                  }else{
+                    date = moment(opts.field.value, opts.format, opts.formatStrict);
+                  }
+                  date = (date && date.isValid()) ? date.toDate() : null;
+                }
+              }
+              else {
+                // not a date
+                date = null;
+              }
+              //original code:
+              // date = moment(opts.field.value, opts.format, opts.formatStrict);
+              // date = (date && date.isValid()) ? date.toDate() : null;
             }
             else {
                 date = new Date(Date.parse(opts.field.value));
